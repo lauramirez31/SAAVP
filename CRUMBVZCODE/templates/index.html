@@ -1,46 +1,47 @@
 <html>
-<head> 
-<title>Pagina Principal</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">    
+<head>
+    <title>Pagina Principal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
 </head>
 <body>
 
+<div class="iz">
+    <form method="post" action="add_clientes"> <!-- Esto envia los datos del formulario a la ruta de python add_contact -->
+        <table>
+            <tr><td colspan="2">FORMULARIO DE REGISTRO</td></tr>
+            <tr><td>Cedula</td><td><input type="text" name="Cedula" placeholder="Cedula"></td></tr>
+            <tr><td>Nombres</td><td><input type="text" name="Nombres" placeholder="Nombres"></td></tr>
+            <tr><td>Telefono</td><td><input type="text" name="Telefono" placeholder="Telefono"></td></tr>
+            <tr><td>Email</td><td><input type="text" name="Email" placeholder="Email"></td></tr>
+            <tr><td>Accion</td><td><button type="submit">
+                Guardar
+            </button></td></tr>
+        </table>
+    </form>
+</div>
 
-    <div class="iz">
-        <form method="post" action="add_clientes">
-            <table>
-                <tr><td colspan="2">FORMULARIO DE REGISTRO</td></tr>
-                <tr><td>Cedula</td><td><input type="text" name="Cedula" placeholder="Cedula"></td></tr>
-                <tr><td>Nombres</td><td><input type="text" name="Nombres" placeholder="Nombres"></td></tr>
-                <tr><td>Telefono</td><td><input type="text" name="Telefono" placeholder="Telefono"></td></tr>
-                <tr><td>Email</td><td><input type="text" name="Email" placeholder="Email"></td></tr>
-                <tr><td>Accion</td></tr><button type="submit">
-                    Guardar
-                </button></td></tr>
-            </table>
-        </form>
-    </div>
-    
-    
-    <div class="der">
-        <table class="table2">
-            <thead>
-                <tr><td>Cedula</td><td>Nombres</td><td>Telefono</td><td>Email</td><td>Operaciones</td></tr>
-            </thead>
-             <tbody>
 
-                {% for cliente in clients %}
-                    <tr>
-                     <td>{{cliente.0}}</td>
-                     <td>{{cliente.1}}</td>
-                     <td>{{cliente.2}}</td>
-                     <td>{{cliente.3}}</td>
-                     <td><a href="/delete/{{cliente.0}}"><button>Eliminar</button></a>
-                        <a href="/edit/{{cliente.0}}"><button>Actualizar</button></a></td>
-                  </tr>
-                {% endfor%}          
+    
+   <div class="der">
+    <table class="table2">
+        <thead>
+            <tr><td>Cedula</td><td>Nombres</td><td>Telefono</td><td>Email</td><td>Operaciones</td></tr>
+        </thead>
+        <tbody>
+            {% for cliente in clients %}
+            <tr>
+                <td>{{ cliente.0 }}</td>
+                <td>{{ cliente.1 }}</td>
+                <td>{{ cliente.2 }}</td>
+                <td>{{ cliente.3 }}</td>
+                <td>
+                    <a href="/delete/{{ cliente.0 }}"><button>Eliminar</button></a>
+                    <a href="/edit/{{ cliente.0 }}"><button>Actualizar</button></a></td>
+                
+            </tr>
+            {% endfor %}
         </tbody>
-       </table>
-    </div>
+    </table>
+</div>
 </body>
 </html>
