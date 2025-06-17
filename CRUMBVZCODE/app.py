@@ -12,6 +12,7 @@ app.config['MYSQL_DB'] = 'mbdpy'
 
 mysql = MySQL(app)
 
+
 # Creamos Ruta Principal
 @app.route("/")
 def Index():
@@ -20,6 +21,7 @@ def Index():
     datos = cu.fetchall()  # ejecutamos para obtener todos los datos
     # print(datos)  # imprime los datos de la consulta
     return render_template('index.html', clients=datos)
+
 
 # Crear Ruta Agregar Clientes
 @app.route("/add_clientes", methods=['POST'])  # Ruta de Acceso al archivo adicionar contacto
@@ -38,6 +40,7 @@ def add_contact():
         print(f"c.c {cc} Nombres {n} Tel {tel} email {em}")
         # return "Agregar Datos Recibidos" # RETORNA UN MENSAJE
         return redirect(url_for('Index'))  # Me redirecciona a la función de la ruta "/"
+
 
 # Crear Ruta Consulta Dato Actualizar
 @app.route('/edit/<string:id>')  # Ruta de Acceso al archivo editar clientes
@@ -64,6 +67,7 @@ def set_contact(id):
         mysql.connection.commit()
         return redirect(url_for('Index'))
 
+
 # Crear Ruta Eliminar Clientes
 @app.route("/delete/<string:id>")  # Ruta de Acceso al archivo editar clientes
 def delete_contact(id):
@@ -71,6 +75,28 @@ def delete_contact(id):
     cur.execute('DELETE from clientes WHERE id_cte={0}'.format(id))
     mysql.connection.commit()
     return redirect(url_for('Index'))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM users WHERE username = %s", (username,password))
+        user = cur.fetchone()
+        cur.close()
+
+        if user:  # Verificación con hash
+            flash("¡Login exitoso!", "success")
+            return redirect(url_for('Index'))  # Página protegida
+        else:
+            flash("Usuario o contraseña incorrectos", "danger")
+
+    return render_template('login.html')
+
+
+
 
 
 if __name__=="__main__":
