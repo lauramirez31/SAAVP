@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="/imc" method="post">
+        <table width="300" border="1" height="300">
+            <tr align="center">
+                <td><label for="n1">peso</label></td>
+                <td><input type="text" name="t1" value="{{py}}"></td>
+            </tr>
+            <tr align="center">
+                <td><label for="n2">altura</label></td>
+                <td><input type="text" name="t2" value="{{sy}}"></td>
+            </tr>
+            <tr align="center">
+                <td><label for="n2">imc</label></td>
+                <td><input type="text" name="t3" value="{{sp}}"></td>
+            </tr>
+            <tr align="center">
+                <td><label for="n3">estado</label></td>
+                <td><input type="text" name="t3" value="{{es}}"></td>
+            </tr>
+            <tr align="center">
+                <td colspan="2">
+                    <input type="submit" value="Calcular">
+                </td>
+            </tr>
+        </table>
+
+        {% if sm is not none %}
+        <h4>su imc es  {{sm}}  usted tiene {{es}} </h4>
+        {% endif %}
+    </form>
+</body>
+</html>
