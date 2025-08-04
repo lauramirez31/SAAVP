@@ -13,11 +13,16 @@
 
             </ul>
             <ul class="navbar-nav ms-auto">
+                {% if session.get('usuario' )%}
+                <li class="nav-item">
+                    <a class="nav-link text-white"  href="{{url_for('logout')}}">Cerrar sesion</a>
+                </li>
+                {% else %}
                 <li class="nav-item">
                     <a class="nav-link text-white"  href="{{url_for('login')}}">Login</a>
                 </li>
+                {% endif %}
             </ul>
-
         </div>
     </div>
     </div>

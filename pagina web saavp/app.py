@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 
 
 
 from flask_mysqldb import MySQL
 
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 
@@ -23,9 +23,30 @@ mysql =MySQL(app)
 def index(): 
     return render_template('index.html')
 
-@app.route('/login')
-def login():                    
+@app.route('/login', methods =['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password_ingresada = request.form['password']
+
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT idUsuario, nombre, password FROM usuarios WHERE username = %s", (username,))
+        usuario = cur.fetchone()
+        cur.close
+
+        if usuario and check_password_hash (usuario[2], password_ingresada):
+            session ['usuario'] = usuario[1]
+            flash(f"BIENVENDO {usuario [1]}")
+            return redirect(url_for('index'))
+        else:
+            flash("usuario o contraseña incorrecta")                    
     return render_template('login.html')
+
+@app.route ('/logout')
+def logout():
+    session.clear()
+    flash("sesion cerrada correctamente")
+    return redirect(url_for('login'))
 
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
