@@ -6,6 +6,43 @@ from flask_mysqldb import MySQL
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
+import secrets   
+from datetime import datetime, timedelta
+import smtplib
+from email.mime.text import MIMEText
+
+#funcion para generar token de recuperacion
+def generate_token(email):
+    token =secrets.token_urlsafe(32)
+    expiry = datetime.now() + timedelta(hours=1)
+    cur = mysql.connection.cursor()
+    cur.execute("UPDATE usuarios SET reset_token= %s, token_expiry = %s WHERE username = %s", (token, expiry, email))
+    mysql.connection.commit()
+    cur.close()
+    return token
+
+#enviar el correo con enlace de recuperacion
+
+def enviar_correo_reset(email,token):
+    enlace = url_for('reset', token = token, _external=True)
+    cuerpo = f"""HOLA, Solicitaste recuperar tu contraseña. Haz click en el siguiente enlace:
+    {enlace}
+    Este enlace expirara en 1 hora
+    Si no lo solisitaste, ignora este mensaje. """
+
+    remitente ='david.lapras.cristian75@gmail.com'
+    clave = 'dslm hlfh gfio dvxs'
+    mensaje = MIMEText(cuerpo)
+    mensaje['Subject'] = 'Recuperar contraseña'
+    mensaje['From']= 'david.lapras.cristian75@gmail.com'
+    mensaje ['To'] = email
+
+    server = smtplib.SMTP('smtp.gmail.com',587)
+    server.starttls()
+    server.login(remitente,clave)
+    server.sendmail(remitente,email,mensaje.as_string())
+    server.quit()
+
 
 
 app= Flask(__name__)
@@ -69,6 +106,54 @@ def registro():
             cur.close()
 
     return render_template('registro.html')
+
+@app.route('/forgot',methods=['GET', 'POST'])
+def forgot():
+    if request.method == 'POST':
+        email = request.form['email']
+
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT idUsuario FROM usuarios WHERE username = %s", (email,))
+        existe = cur.fetchone()
+        cur.close()
+
+        if not existe:
+            flash("Este correo no esta registrado.")
+            return redirect(url_for('forgot'))
+        
+        token = generate_token(email)
+        enviar_correo_reset(email,token)
+
+        flash ("Te ENVIAMOS UN CORREO CON EL ENLACE PARA RESETAR TO CONTRASEÑA >:(")
+        return redirect(url_for('login'))
+    return render_template('forgot.html')
+
+
+@app.route('/reset/<token>', methods = ['GET', 'POST'])
+def reset (token):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT idUsuario, token_expiry FROM usuarios WHERE reset_token = %s", (token,))
+    usuario = cur.fetchone()
+    cur.close()
+
+    if not usuario or datetime.now() >usuario [1]:
+        flash ("Token invalido O expirado :)")
+        return redirect(url_for('forgot'))
+    
+    if request.method == 'POST':
+        nuevo_password = request.form ['password']
+        hash_nueva = generate_password_hash(nuevo_password)
+
+        cur = mysql.connection.cursor()
+        cur.execute("UPDATE usuarios SET password=%s, reset_token=NULL, token_expiry=NULL WHERE idUsuario=%s", (hash_nueva, usuario[0]))
+        mysql.connection.commit()
+        cur.close()
+
+        flash ("Tu contraseña ha sido actualizada ;3")
+        return redirect(url_for('login'))
+    
+    return render_template('reset.html')
+
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
