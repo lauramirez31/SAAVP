@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="container mb-4">
+
+<h3>GESTOR DE USUARIOS</h3>    
+<table class="table table-bordered table-hover ">
+    <thead class="table-warning">
+        <tr>
+            <th>ID</th>
+            <th>Nombres</th>
+            <th>Apellidos</th>
+            <th>Username</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+<tbody>
+    {% for u in usuarios %}
+    <tr>
+        <td>{{ u ['idUsuario']}}</td>
+        <td>{{ u ['nombre']}}</td>
+        <td>{{ u ['apellido']}}</td>
+        <td>{{ u ['username']}}</td>
+        <td><button class="btn btn-warning btn-sm">Editar</button></td>
+    </tr>
+    {% endfor}
+</tbody>
+</table>
+</div>
+{% endblock%}

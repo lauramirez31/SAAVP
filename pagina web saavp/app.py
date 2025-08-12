@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 
 
 from flask_mysqldb import MySQL
+import MySQLdb.cursors
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -74,7 +75,7 @@ def login():
         if usuario and check_password_hash (usuario[2], password_ingresada):
             session ['usuario'] = usuario[1]
             flash(f"BIENVENDO {usuario [1]}")
-            return redirect(url_for('index'))
+            return redirect(url_for('dashboard'))
         else:
             flash("usuario o contraseña incorrecta")                    
     return render_template('login.html')
@@ -153,6 +154,18 @@ def reset (token):
         return redirect(url_for('login'))
     
     return render_template('reset.html')
+
+@app.route('/dashboard')
+def dashboard():
+    if 'usuario' not in session:
+        flash("DEBES INICIAR SESION PARA ACCEDER AL DASHBOARD .")
+        return redirect(url_for('login'))
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT idUsuario, nombre, apellido, usuario, username FROM usuarios")
+    usuarios = cursor.fetchall()
+    cursor.close()
+    
+    return render_template('dashboard.html', usuarios=usuarios)
 
 
 if __name__ == '__main__':
