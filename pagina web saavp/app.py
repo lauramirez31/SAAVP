@@ -161,11 +161,36 @@ def dashboard():
         flash("DEBES INICIAR SESION PARA ACCEDER AL DASHBOARD .")
         return redirect(url_for('login'))
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT idUsuario, nombre, apellido, usuario, username FROM usuarios")
+    cursor.execute("SELECT idUsuario, nombre, apellido, username FROM usuarios")
     usuarios = cursor.fetchall()
     cursor.close()
     
+
     return render_template('dashboard.html', usuarios=usuarios)
+
+
+@app.route('/actualizar/<int:id>', methods=['POST'])
+def actualizar(id):
+    nombre = request.form['nombre']
+    apellido = request.form['apellido']
+    correo = request.form['correo']
+
+    cursor = mysql.connection.cursor()
+    cursor.execute("""UPDATE usuarios SET nombre =%s,apellido =%s, username=%s WHERE idUsuario=%s""",(nombre,apellido,correo,id))
+    mysql.connection.commit()
+    cursor.close()
+
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/eliminar/<int:id>')
+def eliminar(id):
+    cursor = mysql.connection.cursor()
+    cursor.execute('DELETE FROM usuarios WHERE idUsuario=%s',(id,))
+    mysql.connection.commit()
+    cursor.close()
+    flash ('USUARIO ELIMINADO')
+    return redirect(url_for('dashboard'))
 
 
 if __name__ == '__main__':
