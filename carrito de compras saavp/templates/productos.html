@@ -1,0 +1,16 @@
+<h1>Productos</h1>
+<a href="/agregar">Agregar Producto</a>
+ <table border="1" width="300" height="200">
+   {% for p in productos %}
+    <TR>
+        <td>
+         <img src="{{ url_for('static', filename='images/' + p.imagen) }}" width="100">
+        </td>
+         <td>{{ p.nombre }} - ${{ p.precio }}</td>
+         <td><a href="/carrito/{{p.id}}">Agregar al carrito</a></td>
+      </TR>
+         
+   
+   {% endfor %}
+</table>
+<a href="/mostrar_carrito">Ver carrito</a>

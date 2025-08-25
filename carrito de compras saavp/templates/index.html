@@ -1,0 +1,126 @@
+<h1>Productos</h1>
+<a href="/agregar" class="btn-agregar">Agregar Producto</a>
+
+<div class="product-container">
+  {% for p in productos %}
+    <div class="product-card">
+      <img src="{{ url_for('static', filename='images/' + p.imagen) }}" alt="{{ p.nombre }}" width="300">
+      <div class="product-info">
+        <h2>{{ p.nombre }}</h2>
+        <p class="precio">${{ p.precio }}</p>
+        <a href="/carrito/{{ p.id }}" class="btn-carrito">Agregar al carrito</a>
+      </div>
+    </div>
+    <head>
+  <style>
+    body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f8f9fa;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.btn-agregar {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+.btn-agregar:hover {
+  background-color: #0056b3;
+}
+
+.product-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.product-card {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.product-card:hover {
+  transform: scale(1.02);
+}
+
+.product-card img {
+  max-width: 100%;
+  max-height: 150px;
+  object-fit: contain;
+  padding: 10px;
+  background-color: #f0f0f0;
+}
+
+.product-info {
+  padding: 15px;
+  text-align: center;
+}
+
+.product-info h2 {
+  font-size: 1.1rem;
+  margin: 10px 0;
+  color: #333;
+}
+
+.precio {
+  font-weight: bold;
+  color: #28a745;
+  margin-bottom: 10px;
+}
+
+.btn-carrito {
+  display: inline-block;
+  padding: 6px 12px;
+  background-color: #ffc107;
+  color: #212529;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.btn-carrito:hover {
+  background-color: #e0a800;
+}
+
+.btn-ver-carrito {
+  display: block;
+  text-align: center;
+  margin-top: 30px;
+  font-size: 1.1rem;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.btn-ver-carrito:hover {
+  text-decoration: underline;
+}
+  </style>
+</head>
+
+  {% endfor %}
+</div>
+
+<div class="text-center mt-4">
+  <a href="/mostrar_carrito" class="btn-ver-carrito">Ver carrito</a>
+</div>
+
+
+
