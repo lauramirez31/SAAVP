@@ -13,23 +13,23 @@
       <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
         <div class="card border border-dark rounded-3 shadow-lg">
           <div class="card-body p-4">
-            
-            <!-- Logo -->
+
+
             <div class="text-center mb-3">
               <img src="{{url_for('static', filename='img/real-estate-building-logo-icon-design-free-vector.jpg')}}" 
                    alt="Logo" class="img-fluid" style="max-width: 120px;">
             </div>
 
-            <!-- Título -->
+
             <h2 class="fw-bold text-center mb-4">INICIAR SESIÓN</h2>
-            
-            <!-- Selector Cliente / Admin -->
+
+
             <div class="d-flex justify-content-between mb-4">
               <button type="button" class="btn btn-primary w-50 me-2 active">CLIENTE</button>
               <button type="button" class="btn btn-outline-dark w-50">ADMINISTRADOR</button>
             </div>
 
-            <!-- Formulario -->
+
             <form action="{{url_for('login')}}" method="POST">
               <div class="form-floating mb-3">
                 <input type="email" class="form-control rounded-pill" name="username" id="username" placeholder="Usuario o correo" required>
@@ -41,7 +41,7 @@
                 <label for="password">Contraseña</label>
               </div>
 
-              <!-- Opción Google -->
+
               <div class="text-center mb-3">
                 <p class="m-0 fw-bold">O</p>
                 <button type="button" class="btn btn-outline-dark w-100 rounded-pill mt-2">
@@ -50,12 +50,12 @@
                 </button>
               </div>
 
-              <!-- Botón Ingresar -->
+
               <div class="d-grid mb-3">
                 <button class="btn btn-primary btn-lg rounded-pill" type="submit">INGRESAR</button>
               </div>
 
-              <!-- Recordar / Recuperar contraseña -->
+
               <div class="d-flex justify-content-between mb-3">
                 <div class="form-check">
                   <input class="form-check-input" type="checkbox" value="" name="rememberMe" id="rememberMe">
@@ -64,7 +64,6 @@
                 <a href="{{url_for('forgot')}}" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
               </div>
 
-              <!-- Registro -->
               <p class="text-center">¿No tienes una cuenta? 
                 <a href="{{url_for('registro')}}" class="fw-bold text-decoration-none">Regístrate aquí</a>
               </p>

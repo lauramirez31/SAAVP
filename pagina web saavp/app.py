@@ -7,7 +7,7 @@ import MySQLdb.cursors
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-import secrets   
+import secrets
 from datetime import datetime, timedelta
 import smtplib
 from email.mime.text import MIMEText
@@ -68,16 +68,39 @@ def login():
         password_ingresada = request.form['password']
 
         cur = mysql.connection.cursor()
-        cur.execute("SELECT idUsuario, nombre, password FROM usuarios WHERE username = %s", (username,))
+        cur.execute("""
+        SELECT u.idUsuario, u.nombre, u.password, r.nombreRol
+        FROM usuarios u
+        JOIN usuario_rol ur ON u.idUsuario= ur.idUsuario
+        JOIN roles r ON ur.idRol = r.idRol
+        WHERE u.username =%s
+        """, (username,))
+
         usuario = cur.fetchone()
-        cur.close
 
         if usuario and check_password_hash (usuario[2], password_ingresada):
-            session ['usuario'] = usuario[1]
+            session['usuario'] = usuario[1]
+            session['ROL'] = usuario[3]
             flash(f"BIENVENDO {usuario [1]}")
-            return redirect(url_for('dashboard'))
+
+            cur.execute("""
+            INSERT INTO registro_login (idUsuario, fecha)
+            VALUES (%s, NOW())
+            """,(usuario[0],))
+            mysql.connection.commit()
+
+            cur.close()
+
+            if usuario[3] == 'Admin':
+                return redirect(url_for('dashboard'))
+            elif usuario[3] == 'Usuario':
+                return redirect(url_for('index'))
+            else:
+                flash("Rol no reconocido")
+                return redirect(url_for('login'))
         else:
-            flash("usuario o contraseña incorrecta")                    
+            flash("usuario o contraseña incorrecta")
+            return redirect(url_for('login'))
     return render_template('login.html')
 
 @app.route ('/logout')
@@ -99,6 +122,13 @@ def registro():
         try :
             cur.execute("""INSERT INTO usuarios(nombre, apellido, username, password) VALUES (%s, %s, %s, %s)""", (nombre, apellido, username, hash))
             mysql.connection.commit()
+
+            cur.execute("SELECT idUsuario FROM usuarios WHERE username =%s", (username,))
+            nuevo_usuario = cur.fetchone()
+
+            cur.execute("INSERT INTO usuario_rol(idUsuario, idRol) VALUES (%s, %s)", (nuevo_usuario[0], 2))
+            mysql.connection.commit()
+
             flash ("Usuario Registrado Con exito")
             return redirect(url_for('login'))
         except:
@@ -121,7 +151,7 @@ def forgot():
         if not existe:
             flash("Este correo no esta registrado.")
             return redirect(url_for('forgot'))
-        
+
         token = generate_token(email)
         enviar_correo_reset(email,token)
 
@@ -140,7 +170,7 @@ def reset (token):
     if not usuario or datetime.now() >usuario [1]:
         flash ("Token invalido O expirado :)")
         return redirect(url_for('forgot'))
-    
+
     if request.method == 'POST':
         nuevo_password = request.form ['password']
         hash_nueva = generate_password_hash(nuevo_password)
@@ -161,11 +191,15 @@ def dashboard():
         flash("DEBES INICIAR SESION PARA ACCEDER AL DASHBOARD .")
         return redirect(url_for('login'))
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT idUsuario, nombre, apellido, username FROM usuarios")
+    cursor.execute("""
+        SELECT u.idUsuario, u.nombre, u.apellido, u.username, r.nombreRol, ur.idRol
+        FROM usuarios u
+        LEFT JOIN usuario_rol ur ON u.idUsuario = ur.idUsuario
+        LEFT JOIN roles r ON ur.idRol = r.idRol
+        """)
     usuarios = cursor.fetchall()
     cursor.close()
     
-
     return render_template('dashboard.html', usuarios=usuarios)
 
 
@@ -174,9 +208,17 @@ def actualizar(id):
     nombre = request.form['nombre']
     apellido = request.form['apellido']
     correo = request.form['correo']
+    rol = request.form['rol']
 
     cursor = mysql.connection.cursor()
     cursor.execute("""UPDATE usuarios SET nombre =%s,apellido =%s, username=%s WHERE idUsuario=%s""",(nombre,apellido,correo,id))
+    cursor.execute("SELECT * FROM usuario_rol WHERE idUsuario =%s", (id,))
+    existe = cursor.fetchone()
+
+    if existe:
+        cursor.execute("UPDATE usuario_rol SET idRol =%s WHERE idUsuario=%s", (rol,id))
+    else:
+        cursor.execute("INSERT INTO usuario_rol(idUsuario, idRol) VALUES (%s, %s)", (id,rol))
     mysql.connection.commit()
     cursor.close()
 
