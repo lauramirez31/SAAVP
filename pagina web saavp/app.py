@@ -184,7 +184,7 @@ def reset (token):
 
         flash ("Tu contraseña ha sido actualizada ;3")
         return redirect(url_for('login'))
-    
+
     return render_template('reset.html')
 
 @app.route('/dashboard')
@@ -201,7 +201,7 @@ def dashboard():
         """)
     usuarios = cursor.fetchall()
     cursor.close()
-    
+
     return render_template('dashboard.html', usuarios=usuarios)
 
 
@@ -236,7 +236,7 @@ def eliminar(id):
     flash ('USUARIO ELIMINADO')
     return redirect(url_for('dashboard'))
 
-@app.route('/inventario')    
+@app.route('/inventario')
 def inventario():
     if 'rol' not in session or session['rol'] != 'Admin':
        flash("Acceso restringido solo para los administradores")
@@ -250,7 +250,7 @@ def inventario():
 @app.route('/agregar_producto', methods=['GET', 'POST'])
 def agregar_producto():
     if 'rol' not in session or session['rol'] != 'Admin':
-       flash("Acceso restringido solo para los administradores")
+       flash("Acceso restringido solo para los administradores"<)
        return redirect(url_for('login'))
     if request.method == 'POST':
         nombre =request.form['nombre']
@@ -261,6 +261,19 @@ def agregar_producto():
 
         filename = secure_filename(imagen.filename)
         imagen.save(os.patch.join('static/uploads', filename))
+
+
+@app.route('/propiedades')
+def mostrarp():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id_categoria FROM categoria")
+    categorias = cursor.fetchall()
+    cursor.execute("SELECT id_proveedor FROM proveedor")
+    proveedor = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return render_template("propiedades.html",categorias=categorias,proveedor=proveedor)
 
 
 
