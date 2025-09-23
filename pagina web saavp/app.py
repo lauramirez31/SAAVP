@@ -280,3 +280,5 @@ def agregar_propiedad():
         return redirect(url_for('agregar_propiedad'))
 
     return render_template("propiedades.html", categorias=categorias)
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)
