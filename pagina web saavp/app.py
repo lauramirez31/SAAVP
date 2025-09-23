@@ -14,6 +14,8 @@ from datetime import datetime, timedelta
 import smtplib
 from email.mime.text import MIMEText
 
+
+
 #funcion para generar token de recuperacion
 def generate_token(email):
     token =secrets.token_urlsafe(32)
@@ -236,33 +238,45 @@ def eliminar(id):
     flash ('USUARIO ELIMINADO')
     return redirect(url_for('dashboard'))
 
-@app.route('/inventario')    
-def inventario():
-    if 'rol' not in session or session['rol'] != 'Admin':
-       flash("Acceso restringido solo para los administradores")
-       return redirect(url_for('login'))
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("select * from productos")
-    productos = cursor.fetchall()
+
+
+
+@app.route('/agregar_propiedad', methods=['GET', 'POST'])
+def agregar_propiedad():
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM categorias;")
+    categorias = cursor.fetchall()
     cursor.close()
-    return render_template('inventario.html', productos=productos)
 
-@app.route('/agregar_producto', methods=['GET', 'POST'])
-def agregar_producto():
-    if 'rol' not in session or session['rol'] != 'Admin':
-       flash("Acceso restringido solo para los administradores")
-       return redirect(url_for('login'))
     if request.method == 'POST':
-        nombre =request.form['nombre']
-        descripcion =request.form['descripcion']
-        precio =request.form['cantidad']
-        cantidad =request.form['cantidad']
-        imagen =request.files['form']
+        nombre = request.form['nombre']
+        precio = request.form['precio']
+        disponible = request.form['disponible']   
+        estado = request.form['estado']         
+        detalles = request.form['detalles']
+        id_categoria = request.form['id_categoria']
+        idUsuario = request.form['idUsuario']
 
-        filename = secure_filename(imagen.filename)
-        imagen.save(os.patch.join('static/uploads', filename))
+        # Imagen
+        imagen = request.files['imagen']
+        filename = None
+        if imagen and imagen.filename != "":
+            filename = secure_filename(imagen.filename)
+            path_imagen = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            imagen.save(path_imagen)
 
+        # Guardar en BD
+        cursor = mysql.connection.cursor()
+        cursor.execute("""
+            INSERT INTO propiedad 
+            (nombre, precio, disponible, imagen, tipo, detalles, id_categoria, idUsuario) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (nombre, precio, disponible, filename, estado, detalles, id_categoria, idUsuario))
 
+        mysql.connection.commit()
+        cursor.close()
 
-if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+        flash("Propiedad agregada con éxito")
+        return redirect(url_for('agregar_propiedad'))
+
+    return render_template("propiedades.html", categorias=categorias)
