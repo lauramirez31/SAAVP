@@ -251,8 +251,8 @@ def agregar_propiedad():
     if request.method == 'POST':
         nombre = request.form['nombre']
         precio = request.form['precio']
-        disponible = request.form['disponible']   
-        estado = request.form['estado']         
+        disponible = request.form['disponible']
+        estado = request.form['estado']
         detalles = request.form['detalles']
         id_categoria = request.form['id_categoria']
         idUsuario = request.form['idUsuario']
@@ -268,8 +268,8 @@ def agregar_propiedad():
         # Guardar en BD
         cursor = mysql.connection.cursor()
         cursor.execute("""
-            INSERT INTO propiedad 
-            (nombre, precio, disponible, imagen, tipo, detalles, id_categoria, idUsuario) 
+            INSERT INTO propiedad
+            (nombre, precio, disponible, imagen, tipo, detalles, id_categoria, idUsuario)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """, (nombre, precio, disponible, filename, estado, detalles, id_categoria, idUsuario))
 
@@ -280,5 +280,22 @@ def agregar_propiedad():
         return redirect(url_for('agregar_propiedad'))
 
     return render_template("propiedades.html", categorias=categorias)
+
+
+@app.route('/catalogo')
+def catalogo():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT * FROM propiedad")
+    propiedades = cursor.fetchall()
+    cursor.close()
+    return render_template('catalogo.html', propiedades=propiedades)
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
