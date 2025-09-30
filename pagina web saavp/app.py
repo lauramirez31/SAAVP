@@ -53,10 +53,10 @@ def enviar_correo_reset(email,token):
 app= Flask(__name__)
 app.secret_key = 'clave_secreta'
 
-app.config['MYSQL_HOST'] = 'localhost' #servidor base de datos (localhost)
-app.config['MYSQL_USER'] = 'root' # usuario por defecto de phpmyadmin
-app.config['MYSQL_PASSWORD'] = '' #se deja vacio sii no tiene contraseña
-app.config['MYSQL_DB'] = 'saavp' #Nombre de tu base da datos con login y roles
+app.config['MYSQL_HOST'] = 'localhost' 
+app.config['MYSQL_USER'] = 'root' 
+app.config['MYSQL_PASSWORD'] = '' 
+app.config['MYSQL_DB'] = 'saavp' 
 
 mysql =MySQL(app)
 
@@ -246,32 +246,32 @@ def agregar_propiedad():
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT * FROM categorias;")
     categorias = cursor.fetchall()
+    cursor.execute("SELECT * FROM estado_inmueble;")
+    estado = cursor.fetchall()
     cursor.close()
 
     if request.method == 'POST':
         nombre = request.form['nombre']
         precio = request.form['precio']
-        disponible = request.form['disponible']
-        estado = request.form['estado']
+        disponible = request.form['disponible']   
+        estado = request.form['estado']         
         detalles = request.form['detalles']
         id_categoria = request.form['id_categoria']
-        idUsuario = request.form['idUsuario']
+        
 
-        # Imagen
         imagen = request.files['imagen']
         filename = None
         if imagen and imagen.filename != "":
             filename = secure_filename(imagen.filename)
-            path_imagen = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            path_imagen = os.path.join(app.config['static/uploads'], filename)
             imagen.save(path_imagen)
 
-        # Guardar en BD
         cursor = mysql.connection.cursor()
         cursor.execute("""
-            INSERT INTO propiedad
-            (nombre, precio, disponible, imagen, tipo, detalles, id_categoria, idUsuario)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """, (nombre, precio, disponible, filename, estado, detalles, id_categoria, idUsuario))
+            INSERT INTO propiedad 
+            (nombre, precio, disponible, imagen, tipo, detalles, id_categoria) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (nombre, precio, disponible, filename, estado, detalles, id_categoria))
 
         mysql.connection.commit()
         cursor.close()
@@ -279,21 +279,57 @@ def agregar_propiedad():
         flash("Propiedad agregada con éxito")
         return redirect(url_for('agregar_propiedad'))
 
-    return render_template("propiedades.html", categorias=categorias)
+    return render_template("propiedades.html", categorias=categorias, estado=estado)
 
 
-@app.route('/catalogo')
-def catalogo():
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT * FROM propiedad")
-    propiedades = cursor.fetchall()
+@app.route('/agendar', methods=['GET', 'POST'])
+def agendar():
+    if request.method == 'POST':
+        titulo = request.form['titulo']
+        descripcion = request.form['descripcion']
+        fecha = request.form['fecha']
+        hora = request.form['hora']
+
+        # Tomamos el usuario logueado desde la sesión
+        idUsuario = session.get('idUsuario')
+
+        if not idUsuario:
+            flash("Debes iniciar sesión para agendar una cita", "warning")
+            return redirect(url_for('login'))
+
+        cursor = mysql.connection.cursor()
+        cursor.execute("""
+            INSERT INTO citas (titulo, descripcion, fecha, hora, idUsuario)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (titulo, descripcion, fecha, hora, idUsuario))
+        mysql.connection.commit()
+        cursor.close()
+
+        flash("Cita agendada con éxito", "success")
+        return redirect(url_for('mis_citas'))
+
+    return render_template('agendar.html')
+
+
+@app.route('/mis_citas')
+def mis_citas():
+    idUsuario = session.get('idUsuario')
+
+    if not idUsuario:
+        flash("Debes iniciar sesión para ver tus citas", "warning")
+        return redirect(url_for('login'))
+
+    cursor = mysql.connection.cursor()
+    cursor.execute("""
+        SELECT titulo, descripcion, fecha, hora 
+        FROM citas 
+        WHERE idUsuario = %s
+        ORDER BY fecha, hora
+    """, (idUsuario,))
+    citas = cursor.fetchall()
     cursor.close()
-    return render_template('catalogo.html', propiedades=propiedades)
 
-
-
-
-
+    return render_template('mis_citas.html', citas=citas)
 
 
 
