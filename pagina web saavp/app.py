@@ -83,10 +83,11 @@ def login():
         usuario = cur.fetchone()
 
         if usuario and check_password_hash (usuario[2], password_ingresada):
+            session['idUsuario'] = usuario[0]
             session['usuario'] = usuario[1]
             session['ROL'] = usuario[3]
             flash(f"BIENVENDO {usuario [1]}")
-
+           
             cur.execute("""
             INSERT INTO registro_login (idUsuario, fecha)
             VALUES (%s, NOW())
@@ -243,10 +244,19 @@ def eliminar(id):
 
 @app.route('/agregar_propiedad', methods=['GET', 'POST'])
 def agregar_propiedad():
+
+    idUsuario = session.get('idUsuario')
+
+    print("ID de sesión:", idUsuario)  # Depuración: imprime el ID de sesión en la consola
+   
+    if 'usuario' not in session:
+        flash("Debes iniciar sesión para agregar una propiedad.")
+        return redirect(url_for('login'))
+    
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT * FROM categorias;")
     categorias = cursor.fetchall()
-    cursor.execute("SELECT * FROM estado_inmueble;")
+    cursor.execute("SELECT * FROM tipo_inmueble;")
     estado = cursor.fetchall()
     cursor.close()
 
@@ -254,30 +264,31 @@ def agregar_propiedad():
         nombre = request.form['nombre']
         precio = request.form['precio']
         disponible = request.form['disponible']   
-        estado = request.form['estado']         
+        categoria = request.form['categoria']         
         detalles = request.form['detalles']
-        id_categoria = request.form['id_categoria']
-        
+        tipo = request.form['tipo']
+        idUsuario = session.get('idUsuario')
+
 
         imagen = request.files['imagen']
         filename = None
         if imagen and imagen.filename != "":
             filename = secure_filename(imagen.filename)
-            path_imagen = os.path.join(app.config['static/uploads'], filename)
-            imagen.save(path_imagen)
+            imagen.save( os.path.join('static/uploads', filename))
+        
 
         cursor = mysql.connection.cursor()
         cursor.execute("""
             INSERT INTO propiedad 
-            (nombre, precio, disponible, imagen, tipo, detalles, id_categoria) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """, (nombre, precio, disponible, filename, estado, detalles, id_categoria))
+            (nombre, precio, disponible, imagen, tipo, detalles, id_categoria, idUsuario) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (nombre, precio, disponible, filename, tipo, detalles, categoria, idUsuario))
 
         mysql.connection.commit()
         cursor.close()
 
         flash("Propiedad agregada con éxito")
-        return redirect(url_for('agregar_propiedad'))
+        return redirect(url_for('index'))
 
     return render_template("propiedades.html", categorias=categorias, estado=estado)
 
