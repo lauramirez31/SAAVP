@@ -38,13 +38,13 @@
               required>
           </div>
 
-          <!-- tipo -->
+          <!-- Categoría -->
           <div class="mb-3">
-            <label for="tipo" class="form-label">Tipo de Inmueble</label>
-            <select class="form-control" id="tipo" name="tipo" required>
-              <option value="">Seleccione un tipo</option>
-              {% for tipo in estado %}
-              <option value="{{ tipo[0] }}">{{ tipo[3] }} - {{ tipo[1] }}</option>
+            <label for="id_categoria" class="form-label">Tipo de Inmueble</label>
+            <select class="form-control" id="id_categoria" name="id_categoria" required>
+              <option value="">Seleccione una categoría</option>
+              {% for cat in categorias %}
+              <option value="{{ cat[0] }}">{{ cat[3] }} - {{ cat[1] }}</option>
               {% endfor %}
             </select>
           </div>
@@ -60,15 +60,13 @@
           </div>
 
 
-
-
-          <!-- categoria -->
+          <!-- estado -->
           <div class="mb-3">
-            <label for="categoria" class="form-label">categoria del inmueble</label>
-            <select class="form-control" id="categoria" name="categoria" required>
-              <option value="">Seleccione una categoria</option>
-              {% for cat in categorias %}
-              <option value="{{ cat[0] }}">{{ cat[3] }} - {{ cat[1] }}</option>
+            <label for="estado" class="form-label">Estado del inmueble</label>
+            <select class="form-control" id="estado" name="estado" required>
+              <option value="">Seleccione un tipo</option>
+              {% for es in estado %}
+              <option value="{{ es[0] }}">{{ es[1] }}</option>
               {% endfor %}
             </select>
           </div>
@@ -88,11 +86,6 @@
             <label for="imagen" class="form-label">Imagen del Producto</label>
             <input class="form-control" type="file" id="imagen" name="imagen" accept="image/*" required>
           </div>
-
-
-          <!-- idUsuario-->
-          <input type="hidden" name="idUsuario" value="{{ idUsuario }}">
-
 
 
 

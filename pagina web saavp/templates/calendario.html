@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Calendario de Citas{% endblock %}
+
+{% block content %}
+<div class="calendar-wrap">
+
+  <!-- Tabla del calendario -->
+  <table class="calendar">
+    <tbody>
+      {% for semana in dias_mes %}
+      <tr>
+        {% for dia in semana %}
+          {% if dia == 0 %}
+            <td class="empty"></td>
+          {% else %}
+            <td>
+              <span class="day-number">{{ dia }}</span>
+
+              {% if dia in citas_por_dia %}
+                {% for c in citas_por_dia[dia] %}
+                  <div class="cita-item">
+                    <strong>{{ c[1] }}</strong>
+                    {% if c[3] %}
+                      <span class="cita-time">{{ c[3] }}</span>
+                    {% endif %}
+                    <div style="font-size:12px;color:#444; margin-top:4px;">{{ c[4] }}</div>
+
+                    <div class="actions" style="margin-top:6px;">
+                      <form action="{{ url_for('ver_cita', id=c[0]) }}" method="get" style="display:inline;">
+                        <button type="submit" style="font-size:12px; padding:4px 6px;">Ver</button>
+                      </form>
+
+                      {% if session.get('rol') == 'admin' %}
+                        <form action="{{ url_for('editar_cita', id=c[0]) }}" method="get" style="display:inline;">
+                          <button type="submit" style="font-size:12px; padding:4px 6px;">Editar</button>
+                        </form>
+                        <form action="{{ url_for('eliminar_cita', id=c[0]) }}" method="post" style="display:inline;" onsubmit="return confirm('Eliminar cita?');">
+                          <button type="submit" style="font-size:12px; padding:4px 6px;">Eliminar</button>
+                        </form>
+
+                        {% if c[5] %}
+                          <div style="margin-top:6px;">
+                            <img src="{{ url_for('static', filename='uploads/' ~ c[5]) }}" alt="Imagen cita" width="120">
+                          </div>
+                        {% endif %}
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endfor %}
+              {% endif %}
+
+              <!-- Botón para reservar ese día -->
+              <div style="margin-top:8px;">
+                <form action="{{ url_for('reservar') }}" method="get" style="margin:0;">
+                  <input type="hidden" name="fecha" value="{{ '%04d-%02d-%02d' % (year, month, dia) }}">
+                  <button type="submit" style="padding:6px 8px; font-size:13px;">Reservar</button>
+                </form>
+              </div>
+            </td>
+          {% endif %}
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Formulario para agregar nueva cita -->
+  <section id="form-agregar" style="margin-top:18px;">
+    <h3>Agregar nueva cita</h3>
+    <form action="{{ url_for('agregar_cita') }}" method="post" class="form-compact">
+      <label>Fecha</label>
+      <input type="date" name="fecha" required>
+
+      <label>Hora</label>
+      <input type="time" name="hora">
+
+      <label>Inmueble</label>
+      <input type="text" name="inmueble" placeholder="seleccionar inmueble de interes " required>
+
+
+      <label>Descripción</label>
+      <textarea name="descripcion" rows="3" placeholder="Detalles (opcional)"></textarea>
+
+      <button type="submit" style="background:#4a90e2;color:#fff;border:none;border-radius:6px;">Guardar cita</button>
+    </form>
+  </section>
+
+</div>
+{% endblock %}
+
