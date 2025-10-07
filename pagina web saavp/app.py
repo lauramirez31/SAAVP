@@ -240,6 +240,16 @@ def eliminar(id):
     return redirect(url_for('dashboard'))
 
 
+@app.route('/catalogo')
+def catalogo():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT * FROM propiedad")
+    propiedad = cursor.fetchall()
+    cursor.close()
+    return render_template('catalogo.html', propiedad=propiedad)
+
+
+
 
 
 @app.route('/agregar_propiedad', methods=['GET', 'POST'])
@@ -295,31 +305,29 @@ def agregar_propiedad():
 
 @app.route('/agendar', methods=['GET', 'POST'])
 def agendar():
+    id_propiedad = request.args.get('id') 
+    idUsuario = session.get('idUsuario')   
+
     if request.method == 'POST':
-        titulo = request.form['titulo']
-        descripcion = request.form['descripcion']
+        nombre = request.form['nombre']
+        apellido = request.form['apellido']
         fecha = request.form['fecha']
         hora = request.form['hora']
 
-        # Tomamos el usuario logueado desde la sesión
-        idUsuario = session.get('idUsuario')
-
-        if not idUsuario:
-            flash("Debes iniciar sesión para agendar una cita", "warning")
-            return redirect(url_for('login'))
-
+  
         cursor = mysql.connection.cursor()
         cursor.execute("""
-            INSERT INTO citas (titulo, descripcion, fecha, hora, idUsuario)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (titulo, descripcion, fecha, hora, idUsuario))
+            INSERT INTO citas (nombre, apellido, fecha, hora, id_propiedad, idUsuario)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (nombre, apellido, fecha, hora, id_propiedad, idUsuario))
         mysql.connection.commit()
         cursor.close()
 
-        flash("Cita agendada con éxito", "success")
-        return redirect(url_for('mis_citas'))
+        flash("Cita agendada con éxito")
+        return redirect(url_for('catalogo'))
 
-    return render_template('agendar.html')
+    return render_template('agendar.html', id_propiedad=id_propiedad)
+
 
 
 @app.route('/mis_citas')
