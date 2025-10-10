@@ -24,9 +24,28 @@
         </div>
 
         <div class="mb-3">
+          <label for="motivo" class="form-label">Motivo</label>
+          <input type="text" class="form-control" id="motivo" name="motivo" required>
+        </div>
+
+        <div class="mb-3">
           <label for="hora" class="form-label">Hora</label>
           <input type="time" class="form-control" id="hora" name="hora" required>
         </div>
+
+        <div class="mb-3">
+          <label for="correo" class="form-label">Correo Electronico</label>
+          <input type="email" class="form-control" id="correo" name="correo" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="metodo" class="form-label">Metodo de Pago</label>
+            <select class="form-control" id="metodo" name="metodo" required>
+              <option value="">Seleccione su Metodo</option>
+              <option value="efectivo">Efectivo</option>
+              <option value="transferencia">Transferencia</option>
+            </select>
+          </div>
 
         <button type="submit" class="btn btn-success">Agendar</button>
       </form>

@@ -23,7 +23,7 @@
                     <p class="card-text text-secondary">Disponibilidad: {{ p.disponible }}</p>
 
                     <form method="POST">
-                        <input type="number" name="cantidad" value="1" min="1" class="form-control mb-2">
+                       
                         <button type="button" class="btn btn-success w-100" data-bs-toggle="modal"
                             data-bs-target="#modal{{ p.id_propiedad }}">
                             Ver más
@@ -63,10 +63,7 @@
                 <form method="POST" class="mt-3">
                     <input type="hidden" name="id_propiedad" value="{{ p.id_propiedad }}">
                     <div class="row g-2 justify-content-center">
-                        <div class="col-6 col-md-4">
-                            <input type="number" name="cantidad" value="1" min="1" class="form-control"
-                                aria-label="cantidad">
-                        </div>
+                        
                         <div class="col-12 col-md-6">
                             <a href="{{ url_for('agendar', id=p.id_propiedad) }}" class="btn btn-success w-100">
                                 Agendar Cita

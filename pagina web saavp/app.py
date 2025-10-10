@@ -36,7 +36,7 @@ def enviar_correo_reset(email,token):
     Si no lo solisitaste, ignora este mensaje. """
 
     remitente ='david.lapras.cristian75@gmail.com'
-    clave = 'dslm hlfh gfio dvxs'
+    clave = 'bmze wpye rxfi duke'
     mensaje = MIMEText(cuerpo)
     mensaje['Subject'] = 'Recuperar contraseña'
     mensaje['From']= 'david.lapras.cristian75@gmail.com'
@@ -48,6 +48,34 @@ def enviar_correo_reset(email,token):
     server.sendmail(remitente,email,mensaje.as_string())
     server.quit()
 
+def enviar_correo_cita(email, nombre, fecha, hora, motivo):
+    cuerpo = f"""
+    Hola {nombre},
+
+    Tu cita ha sido agendada exitosamente.
+
+    Detalles de tu cita:
+    - Motivo: {motivo}
+    - Fecha: {fecha}
+    - Hora: {hora}
+
+    Por favor llega puntual o responde a este correo si necesitas reprogramarla.
+
+    ¡Gracias por confiar en nosotros!
+    """
+
+    remitente = 'david.lapras.cristian75@gmail.com'
+    clave = 'bmze wpye rxfi duke'  
+    mensaje = MIMEText(cuerpo)
+    mensaje['Subject'] = 'Confirmación de cita'
+    mensaje['From'] = remitente
+    mensaje['To'] = email
+
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(remitente, clave)
+    server.sendmail(remitente, email, mensaje.as_string())
+    server.quit()
 
 
 app= Flask(__name__)
@@ -85,7 +113,7 @@ def login():
         if usuario and check_password_hash (usuario[2], password_ingresada):
             session['idUsuario'] = usuario[0]
             session['usuario'] = usuario[1]
-            session['ROL'] = usuario[3]
+            session['rol'] = usuario[3]
             flash(f"BIENVENDO {usuario [1]}")
            
             cur.execute("""
@@ -240,6 +268,87 @@ def eliminar(id):
     return redirect(url_for('dashboard'))
 
 
+@app.route('/dashboard_propiedades')
+def dashboard_propiedades():
+
+    if 'usuario' not in session:
+        flash("Debes iniciar sesión para acceder al dashboard.")
+        return redirect(url_for('login'))
+
+  
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute("""
+        SELECT p.id_propiedad, p.nombre, p.precio, p.disponible, p.imagen,
+               p.tipo, p.detalles, p.id_categoria, c.nombre AS categoria_nombre
+        FROM propiedad p
+        LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
+    """)
+    propiedades = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM categorias")
+    categorias = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM tipo_inmueble")
+    tipos = cursor.fetchall()
+
+    cursor.close()
+    return render_template('dashboard_propiedades.html', propiedades=propiedades, categorias=categorias, tipos=tipos)
+
+@app.route('/actualizar_propiedad/<int:id>', methods=['POST'])
+def actualizar_propiedad(id):
+    if 'usuario' not in session or session.get('rol') != 'Admin':
+        flash("Acceso no autorizado.")
+        return redirect(url_for('login'))
+
+    nombre = request.form['nombre']
+    precio = request.form['precio']
+    disponible = request.form['disponible']
+    id_categoria = request.form['id_categoria']
+    tipo = request.form['tipo']
+    detalles = request.form['detalles']
+    imagen = request.files.get('imagen')
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+   
+    if imagen and imagen.filename != '':
+        filename = imagen.filename
+        ruta = os.path.join('static/uploads', filename)
+        imagen.save(ruta)
+        cursor.execute("""
+            UPDATE propiedad SET nombre=%s, precio=%s, disponible=%s,
+            id_categoria=%s, tipo=%s, detalles=%s, imagen=%s
+            WHERE id_propiedad=%s
+        """, (nombre, precio, disponible, id_categoria, tipo, detalles, filename, id))
+    else:
+      
+        cursor.execute("""
+            UPDATE propiedad SET nombre=%s, precio=%s, disponible=%s,
+            id_categoria=%s, tipo=%s, detalles=%s
+            WHERE id_propiedad=%s
+        """, (nombre, precio, disponible, id_categoria, tipo, detalles, id))
+
+    mysql.connection.commit()
+    cursor.close()
+    flash("Propiedad actualizada correctamente.")
+    return redirect(url_for('dashboard_propiedades'))
+
+@app.route('/eliminar_propiedad/<int:id>')
+def eliminar_propiedad(id):
+    if 'usuario' not in session or session.get('rol') != 'Admin':
+        flash("Acceso no autorizado.")
+        return redirect(url_for('login'))
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("DELETE FROM propiedad WHERE id_propiedad = %s", [id])
+    mysql.connection.commit()
+    cursor.close()
+    flash("Propiedad eliminada correctamente.")
+    return redirect(url_for('dashboard_propiedades'))
+
+
 @app.route('/catalogo')
 def catalogo():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -311,17 +420,26 @@ def agendar():
     if request.method == 'POST':
         nombre = request.form['nombre']
         apellido = request.form['apellido']
+        motivo = request.form['motivo']
         fecha = request.form['fecha']
         hora = request.form['hora']
+        correo = request.form['correo']
+        metodo =  request.form['metodo']
+        
 
   
         cursor = mysql.connection.cursor()
         cursor.execute("""
-            INSERT INTO citas (nombre, apellido, fecha, hora, id_propiedad, idUsuario)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """, (nombre, apellido, fecha, hora, id_propiedad, idUsuario))
+            INSERT INTO citas (nombre, apellido, motivo, fecha, hora, correo, metodo, id_propiedad, idUsuario)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (nombre, apellido,motivo, fecha, hora, correo, metodo, id_propiedad, idUsuario))
         mysql.connection.commit()
         cursor.close()
+
+        try:
+            enviar_correo_cita(correo, nombre, fecha, hora, motivo)
+        except Exception as e:
+            print("Error al enviar el correo:", e)
 
         flash("Cita agendada con éxito")
         return redirect(url_for('catalogo'))
@@ -349,6 +467,24 @@ def mis_citas():
     cursor.close()
 
     return render_template('mis_citas.html', citas=citas)
+
+@app.route('/calendario')
+def calendario():
+    if 'usuario' not in session:
+        flash("Debes iniciar sesión para acceder al calendario.")
+        return redirect(url_for('login'))
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("""
+        SELECT c.id_cita, c.nombre, c.apellido, c.fecha, c.hora, c.motivo, c.correo
+        FROM citas c
+        ORDER BY c.fecha, c.hora
+    """)
+    citas = cursor.fetchall()
+    cursor.close()
+
+    return render_template('calendario.html', citas=citas)
+
 
 
 
