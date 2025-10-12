@@ -5,6 +5,11 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 
+from flask import send_file
+import pandas as pd
+import io
+
+
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
@@ -484,6 +489,108 @@ def calendario():
     cursor.close()
 
     return render_template('calendario.html', citas=citas)
+
+
+from flask import send_file
+import pandas as pd
+import io
+
+@app.route('/reporte_citas_excel')
+def reporte_citas_excel():
+    if 'usuario' not in session:
+        flash("Debes iniciar sesión como administrador.")
+        return redirect(url_for('login'))
+    
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("""
+        SELECT c.id_cita, c.nombre, c.apellido, c.fecha, c.hora, c.motivo, c.correo, p.nombre AS propiedad
+        FROM citas c
+        LEFT JOIN propiedad p ON c.id_propiedad = p.id_propiedad
+        ORDER BY c.fecha, c.hora
+    """)
+    citas = cursor.fetchall()
+    cursor.close()
+
+    if not citas:
+        flash("No hay citas para exportar.")
+        return redirect(url_for('dashboard'))
+
+    df = pd.DataFrame(citas)
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Citas')
+
+    output.seek(0)
+    return send_file(output, as_attachment=True, download_name='reporte_citas.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+
+@app.route('/dashboard_citas')
+def dashboard_citas():
+    if 'usuario' not in session:
+        flash("Debes iniciar sesión para acceder al dashboard.")
+        return redirect(url_for('login'))
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("""
+        SELECT c.id_cita, c.nombre, c.apellido, c.fecha, c.hora, c.motivo, 
+               c.correo, c.metodo, u.username, p.nombre AS propiedad
+        FROM citas c
+        LEFT JOIN usuarios u ON c.idUsuario = u.idUsuario
+        LEFT JOIN propiedad p ON c.id_propiedad = p.id_propiedad
+        ORDER BY c.fecha DESC, c.hora DESC
+    """)
+    citas = cursor.fetchall()
+    cursor.close()
+
+    return render_template('dashboard_citas.html', citas=citas)
+
+@app.route('/editar_cita/<int:id>', methods=['GET', 'POST'])
+def editar_cita(id):
+    if 'usuario' not in session:
+        flash("Debes iniciar sesión.")
+        return redirect(url_for('login'))
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        apellido = request.form['apellido']
+        fecha = request.form['fecha']
+        hora = request.form['hora']
+        motivo = request.form['motivo']
+        correo = request.form['correo']
+        metodo = request.form['metodo']
+
+        cursor.execute("""
+            UPDATE citas 
+            SET nombre=%s, apellido=%s, fecha=%s, hora=%s, motivo=%s, correo=%s, metodo=%s
+            WHERE id_cita=%s
+        """, (nombre, apellido, fecha, hora, motivo, correo, metodo, id))
+        mysql.connection.commit()
+        cursor.close()
+        flash("Cita actualizada correctamente.")
+        return redirect(url_for('dashboard_citas'))
+
+    cursor.execute("SELECT * FROM citas WHERE id_cita = %s", [id])
+    cita = cursor.fetchone()
+    cursor.close()
+
+    return render_template('editar_cita.html', cita=cita)
+
+@app.route('/eliminar_cita/<int:id>')
+def eliminar_cita(id):
+    if 'usuario' not in session:
+        flash("Debes iniciar sesión.")
+        return redirect(url_for('login'))
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("DELETE FROM citas WHERE id_cita = %s", [id])
+    mysql.connection.commit()
+    cursor.close()
+    flash("Cita eliminada correctamente.")
+    return redirect(url_for('dashboard_citas'))
+
+
 
 
 
