@@ -1,8 +1,6 @@
 .navbar {
     background-color: rgb(24, 169, 227);
     border: none;
-
-
 }
 
 .navbar-brand, .nav > li > a {
@@ -10,13 +8,119 @@
 }
 
 .nav > li > a:hover {
-    background-color: #b30000; /* Azul más oscuro al pasar el mouse */
+    background-color: #b30000; /* Rojo más oscuro al pasar el mouse */
     color: #fff !important;
 }
 
 img.logo {
     max-width: 100%;
     height: auto;
+}
 
+/* citas */
+#calendar {
+  background: url("../img/fondo-calendario2.jpg") center/cover no-repeat;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
 
+/* Contenedor del formulario */
+#form-agregar {
+  max-width: 500px;
+  margin: 40px auto;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 25px 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(6px);
+}
+
+/* Título */
+#form-agregar h3 {
+  text-align: center;
+  color: #1e88e5;
+  margin-bottom: 20px;
+}
+
+/* Campos */
+#form-agregar input,
+#form-agregar textarea {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  transition: 0.2s ease;
+  font-size: 15px;
+}
+
+#form-agregar input:focus,
+#form-agregar textarea:focus {
+  border-color: #4a90e2;
+  background-color: #fff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(74, 144, 226, 0.4);
+}
+
+/* Botón */
+#form-agregar button {
+  width: 100%;
+  background: linear-gradient(90deg, #4a90e2, #357ABD);
+  color: #fff;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#form-agregar button:hover {
+  background: linear-gradient(90deg, #5AA9E6, #2E6BB3);
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+  #form-agregar {
+    width: 90%;
+    padding: 20px;
+  }
+}
+/* --- BOTONES ANTERIOR / SIGUIENTE DEL CALENDARIO --- */
+.cal-nav a {
+  display: inline-block;
+  background: linear-gradient(90deg, #4a90e2, #357ABD);
+  color: #fff !important;
+  padding: 10px 18px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+  margin: 0 5px;
+}
+
+.cal-nav a:hover {
+  background: linear-gradient(90deg, #5AA9E6, #2E6BB3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Centrado y espaciado del encabezado */
+.cal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  color: #fff;
+}
+
+.cal-header h2 {
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  font-size: 22px;
 }
