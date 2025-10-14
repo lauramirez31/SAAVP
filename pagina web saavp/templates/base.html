@@ -17,13 +17,8 @@
     <title>{% block title %}Mi app {% endblock %}</title>
 </head>
 <body>
-    
-    
-    
-    
-    
     <body style="background-image: url('static/img/images.png'); background-repeat: no-repeat; background-size: cover;"></body>
-    {% include 'menu.html' %}
+
     {% with messages = get_flashed_messages() %}
         {% if messages %}
         <div class="container mt-3">
@@ -33,8 +28,14 @@
         </div>
         {% endif %}
     {% endwith %}
-
+    
     
     {% block content %}{% endblock %}
+
+            </ul>
+        </div>
+    </div>
+    </div>
+</nav>
 </body>
 </html>

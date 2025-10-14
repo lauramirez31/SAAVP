@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% extends 'base.html' %}
 
 {% block content %}
@@ -34,3 +35,60 @@
   </div>
 </div>
 {% endblock %}
+=======
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-lg border-0 rounded-3">
+    <div class="card-header bg-primary text-white text-center">
+      <h4>Agendar Cita</h4>
+    </div>
+    <div class="card-body">
+      <form action="/agendar" method="POST">
+        <div class="mb-3">
+          <label for="titulo" class="form-label">Nombre</label>
+          <input type="text" class="form-control" id="nombre" name="nombre" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="apellido" class="form-label">Apellido</label>
+          <textarea class="form-control" id="apellido" name="apellido"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="fecha" class="form-label">Fecha</label>
+          <input type="date" class="form-control" id="fecha" name="fecha" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="motivo" class="form-label">Motivo</label>
+          <input type="text" class="form-control" id="motivo" name="motivo" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="hora" class="form-label">Hora</label>
+          <input type="time" class="form-control" id="hora" name="hora" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="correo" class="form-label">Correo Electronico</label>
+          <input type="email" class="form-control" id="correo" name="correo" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="metodo" class="form-label">Metodo de Pago</label>
+            <select class="form-control" id="metodo" name="metodo" required>
+              <option value="">Seleccione su Metodo</option>
+              <option value="efectivo">Efectivo</option>
+              <option value="transferencia">Transferencia</option>
+            </select>
+          </div>
+
+        <button type="submit" class="btn btn-success">Agendar</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+>>>>>>> e6878e68873860dfef683cb9749b5d72a6d0082d

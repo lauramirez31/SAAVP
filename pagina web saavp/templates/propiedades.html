@@ -1,6 +1,6 @@
 {% extends 'base.html'%}
 
-{% block title %}propiedades {% endblock %}
+{% block title %}Registro de Propiedades{% endblock %}
 
 {% block content %}
 
@@ -25,20 +25,24 @@
       <div class="card-body">
         <form action="/agregar_propiedad" method="POST" enctype="multipart/form-data">
 
-          <!-- Nombre del producto -->
+          <!-- Nombre -->
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre de la propiedad</label>
+<<<<<<< HEAD
             <input type="text" class="form-control" id="nombre" name="nombre" placeholder="casa" required>
+=======
+            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Casa moderna" required>
+>>>>>>> e6878e68873860dfef683cb9749b5d72a6d0082d
           </div>
 
           <!-- Precio -->
           <div class="mb-3">
             <label for="precio" class="form-label">Precio ($)</label>
-            <input type="number" class="form-control" id="precio" name="precio" step="0.01" placeholder="Ej: 1500.00"
-              required>
+            <input type="number" class="form-control" id="precio" name="precio" step="0.01" placeholder="Ej: 1500.00" required>
           </div>
 
           <!-- Categoría -->
+<<<<<<< HEAD
           <div class="mb-3">
             <label for="id_categoria" class="form-label">Tipo de Inmueble</label>
             <select class="form-control" id="id_categoria" name="id_categoria" required>
@@ -67,29 +71,59 @@
               <option value="">Seleccione un tipo</option>
               {% for es in estado %}
               <option value="{{ es[0] }}">{{ es[1] }}</option>
+=======
+          <div class="mb-3">
+            <label for="categoria" class="form-label">Categoría</label>
+            <select class="form-control" id="categoria" name="categoria" required>
+              <option value="">Seleccione una categoría</option>
+              {% for cat in categorias %}
+              <option value="{{ cat[0] }}">{{ cat[1] }}</option>
+>>>>>>> e6878e68873860dfef683cb9749b5d72a6d0082d
               {% endfor %}
             </select>
           </div>
 
-          <!-- detalles -->
+          <!-- Tipo de inmueble -->
           <div class="mb-3">
+<<<<<<< HEAD
             <label for="detalles" class="form-label">agrega detalles a la Propiedad</label>
             <input type="text" class="form-control" id="detalles" name="detalles" step="0.01"
               placeholder="casa agradale con 2 pisos y patia on baños privados" required>
           </div>
 
 
+=======
+            <label for="tipo" class="form-label">Tipo de Inmueble</label>
+            <select class="form-control" id="tipo" name="tipo" required>
+              <option value="">Seleccione un tipo</option>
+              {% for es in estado %}
+              <option value="{{ es[1] }}">{{ es[1] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+>>>>>>> e6878e68873860dfef683cb9749b5d72a6d0082d
 
+          <!-- Disponible -->
+          <div class="mb-3">
+            <label for="disponible" class="form-label">Disponibilidad</label>
+            <select class="form-control" id="disponible" name="disponible" required>
+              <option value="">Seleccione disponibilidad</option>
+              <option value="si">Disponible</option>
+              <option value="no">No disponible</option>
+            </select>
+          </div>
+
+          <!-- Detalles -->
+          <div class="mb-3">
+            <label for="detalles" class="form-label">Detalles de la Propiedad</label>
+            <textarea class="form-control" id="detalles" name="detalles" rows="3" placeholder="Casa con 3 habitaciones, patio amplio, garaje, etc." required></textarea>
+          </div>
 
           <!-- Imagen -->
           <div class="mb-3">
-            <label for="imagen" class="form-label">Imagen del Producto</label>
+            <label for="imagen" class="form-label">Imagen de la Propiedad</label>
             <input class="form-control" type="file" id="imagen" name="imagen" accept="image/*" required>
           </div>
-
-
-
-
 
           <!-- Botones -->
           <div class="d-flex justify-content-end">

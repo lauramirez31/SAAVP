@@ -1,0 +1,22 @@
+.navbar {
+    background-color: rgb(24, 169, 227);
+    border: none;
+
+
+}
+
+.navbar-brand, .nav > li > a {
+    color: #fff !important; /* Texto blanco en la barra de navegación */
+}
+
+.nav > li > a:hover {
+    background-color: #b30000; /* Azul más oscuro al pasar el mouse */
+    color: #fff !important;
+}
+
+img.logo {
+    max-width: 100%;
+    height: auto;
+
+
+}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow border-0">
+    <div class="card-header bg-success text-white text-center">
+      <h4>Calendario de Citas</h4>
+    </div>
+    <div class="card-body">
+      {% if citas %}
+      <table class="table table-striped text-center">
+        <thead class="table-success">
+          <tr>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Nombre</th>
+            <th>Motivo</th>
+            <th>Correo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in citas %}
+          <tr>
+            <td>{{ c.fecha }}</td>
+            <td>{{ c.hora }}</td>
+            <td>{{ c.nombre }} {{ c.apellido }}</td>
+            <td>{{ c.motivo }}</td>
+            <td>{{ c.correo }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="alert alert-info text-center">
+        No hay citas registradas.
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

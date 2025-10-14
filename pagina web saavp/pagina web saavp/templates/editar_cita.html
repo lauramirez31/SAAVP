@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-lg border-0 rounded-3">
+    <div class="card-header bg-warning text-dark text-center">
+      <h4>✏️ Editar Cita</h4>
+    </div>
+    <div class="card-body">
+      <form action="{{ url_for('editar_cita', id=cita.id_cita) }}" method="POST">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label>Nombre</label>
+            <input type="text" class="form-control" name="nombre" value="{{ cita.nombre }}" required>
+          </div>
+          <div class="col-md-6">
+            <label>Apellido</label>
+            <input type="text" class="form-control" name="apellido" value="{{ cita.apellido }}" required>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label>Fecha</label>
+            <input type="date" class="form-control" name="fecha" value="{{ cita.fecha }}">
+          </div>
+          <div class="col-md-6">
+            <label>Hora</label>
+            <input type="time" class="form-control" name="hora" value="{{ cita.hora }}">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label>Motivo</label>
+          <textarea class="form-control" name="motivo" rows="2">{{ cita.motivo }}</textarea>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label>Correo</label>
+            <input type="email" class="form-control" name="correo" value="{{ cita.correo }}">
+          </div>
+          <div class="col-md-6">
+            <label>Método de Pago</label>
+            <select class="form-select" name="metodo">
+              <option value="efectivo" {% if cita.metodo == 'efectivo' %}selected{% endif %}>Efectivo</option>
+              <option value="transferencia" {% if cita.metodo == 'transferencia' %}selected{% endif %}>Transferencia</option>
+            </select>
+          </div>
+        </div>
+        <div class="text-center">
+          <button class="btn btn-success px-4">Guardar Cambios</button>
+          <a href="{{ url_for('dashboard_citas') }}" class="btn btn-secondary px-4">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

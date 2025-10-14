@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Propiedades{% endblock %}
+
+{% block content %}
+
+<div class="container mb-4">
+
+    <h3>Gestor de propiedades</h3>
+    <table class="table table-bordered table-hover">
+        <thead class="table-primary">
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Disponible</th>
+                <th>Categoría</th>
+                <th>Tipo</th>
+                <th>Imagen</th>
+                <th>Detalles</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in propiedades %}
+            <tr>
+                <td>{{ p['id_propiedad'] }}</td>
+                <td>{{ p['nombre'] }}</td>
+                <td>${{ "{:,.2f}".format(p['precio']) }}</td>
+                <td>
+                    {% if p['disponible'] == 'si' %}
+                    <span class="badge bg-success">Sí</span>
+                    {% else %}
+                    <span class="badge bg-danger">No</span>
+                    {% endif %}
+                </td>
+                <td>{{ p['categoria'] }}</td>
+                <td>{{ p['tipo'] }}</td>
+                <td>
+                    {% if p['imagen'] %}
+                    <img src="{{ url_for('static', filename='uploads/' + p['imagen']) }}" alt="Imagen" width="60"
+                        height="60" class="rounded">
+                    {% else %}
+                    <span class="text-muted">Sin imagen</span>
+                    {% endif %}
+                </td>
+                <td>{{ p['detalles'] }}</td>
+                <td>
+            
+                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#ModalEdit{{p['id_propiedad']}}">Editar</button>
+
+             
+                    <div class="modal fade" id="ModalEdit{{p['id_propiedad']}}" tabindex="-1"
+                        aria-labelledby="EditModalLabel{{p['id_propiedad']}}" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <form action="{{ url_for('actualizar_propiedad', id=p['id_propiedad']) }}" method="POST"
+                                enctype="multipart/form-data">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h4 class="modal-title" id="EditModalLabel{{p['id_propiedad']}}">Editar
+                                            Propiedad: {{ p['nombre'] }}</h4>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <div class="row mb-2">
+                                            <div class="col-md-6">
+                                                <label>Nombre</label>
+                                                <input type="text" name="nombre" class="form-control"
+                                                    value="{{ p['nombre'] }}" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label>Precio</label>
+                                                <input type="number" name="precio" step="0.01" class="form-control"
+                                                    value="{{ p['precio'] }}" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-2">
+                                            <div class="col-md-4">
+                                                <label>Disponible</label>
+                                                <select name="disponible" class="form-select">
+                                                    <option value="si" {% if p['disponible']=='si' %}selected{% endif
+                                                        %}>Sí</option>
+                                                    <option value="no" {% if p['disponible']=='no' %}selected{% endif
+                                                        %}>No</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label>Categoría</label>
+                                                <select name="id_categoria" class="form-select">
+                                                    {% for c in categorias %}
+                                                    <option value="{{ c['id_categoria'] }}" {% if
+                                                        c['id_categoria']==p['id_categoria'] %}selected{% endif %}>
+                                                        {{ c['nombre'] }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label>Tipo</label>
+                                                <select name="tipo" class="form-select">
+                                                    {% for t in tipos %}
+                                                    <option value="{{ t['descripcion_tipo'] }}" {% if
+                                                        t['descripcion_tipo']==p['tipo'] %}selected{% endif %}>
+                                                        {{ t['descripcion_tipo'] }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label>Detalles</label>
+                                            <textarea name="detalles" class="form-control"
+                                                rows="2">{{ p['detalles'] }}</textarea>
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label>Imagen</label>
+                                            <input type="file" name="imagen" class="form-control">
+                                            {% if p['imagen'] %}
+                                            <small class="text-muted">Actual: {{ p['imagen'] }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Botón eliminar -->
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#ModalEliminar{{p['id_propiedad']}}">Eliminar</button>
+
+                    <!-- Modal Eliminar -->
+                    <div class="modal fade" id="ModalEliminar{{p['id_propiedad']}}" tabindex="-1"
+                        aria-labelledby="modalLabel{{p['id_propiedad']}}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="modalLabel{{p['id_propiedad']}}">Confirmar eliminación
+                                    </h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    ¿Seguro que deseas eliminar la propiedad <strong>{{ p['nombre'] }}</strong>?
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancelar</button>
+                                    <a href="{{ url_for('eliminar_propiedad', id=p['id_propiedad']) }}"
+                                        class="btn btn-danger">Eliminar</a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
