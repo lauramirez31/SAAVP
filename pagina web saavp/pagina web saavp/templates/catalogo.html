@@ -59,15 +59,21 @@
                 <p class="fs-5 fw-bold text-success">
                     Valor ${{ "{:,.0f}".format(p.precio) }}
                 </p>
+                
+                
 
                 <form method="POST" class="mt-3">
                     <input type="hidden" name="id_propiedad" value="{{ p.id_propiedad }}">
                     <div class="row g-2 justify-content-center">
                         
+                        
                         <div class="col-12 col-md-6">
                             <a href="{{ url_for('agendar', id=p.id_propiedad) }}" class="btn btn-success w-100">
                                 Agendar Cita
                             </a>
+                        </div>
+                        <div>
+                            <p>{{p.nombre_zona}}</p>
                         </div>
 
                     </div>

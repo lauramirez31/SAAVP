@@ -81,6 +81,18 @@
           </div>
 
 
+          <!-- zona-->
+          <div class="mb-3">
+            <label for="zona" class="form-label">Zona</label>
+            <select class="form-select" id="zona" name="zona" required>
+              <option value="">Selecciona una zona</option>
+              {% for z in zona %}
+              <option value="{{ z[0] }}">{{ z[1] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+
 
 
           <!-- Imagen -->
@@ -92,6 +104,10 @@
 
           <!-- idUsuario-->
           <input type="hidden" name="idUsuario" value="{{ idUsuario }}">
+
+
+
+
 
 
 

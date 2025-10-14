@@ -22,6 +22,7 @@ from email.mime.text import MIMEText
 
 
 
+
 #funcion para generar token de recuperacion
 def generate_token(email):
     token =secrets.token_urlsafe(32)
@@ -93,7 +94,6 @@ app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'saavp' 
 
 mysql =MySQL(app)
-db = MySQL(app)
 
 
 @app.route('/')
@@ -359,7 +359,11 @@ def eliminar_propiedad(id):
 @app.route('/catalogo')
 def catalogo():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT * FROM propiedad")
+    cursor.execute("""SELECT p.id_propiedad, p.nombre, p.precio, p.disponible,
+                   p.imagen, p.tipo, p.detalles, z.nombre_zona
+                   FROM propiedad p
+                   LEFT JOIN zona z 
+                   ON p.zona = z.id_zona""" )
     propiedad = cursor.fetchall()
     cursor.close()
     return render_template('catalogo.html', propiedad=propiedad)
@@ -384,6 +388,8 @@ def agregar_propiedad():
     categorias = cursor.fetchall()
     cursor.execute("SELECT * FROM tipo_inmueble;")
     estado = cursor.fetchall()
+    cursor.execute("SELECT id_zona, nombre_zona FROM zona")
+    zona = cursor.fetchall()
     cursor.close()
 
     if request.method == 'POST':
@@ -394,6 +400,7 @@ def agregar_propiedad():
         detalles = request.form['detalles']
         tipo = request.form['tipo']
         idUsuario = session.get('idUsuario')
+        zona = request.form['zona']
 
 
         imagen = request.files['imagen']
@@ -406,9 +413,11 @@ def agregar_propiedad():
         cursor = mysql.connection.cursor()
         cursor.execute("""
             INSERT INTO propiedad 
-            (nombre, precio, disponible, imagen, tipo, detalles, id_categoria, idUsuario) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """, (nombre, precio, disponible, filename, tipo, detalles, categoria, idUsuario))
+            (nombre, precio, disponible, imagen, tipo, detalles, id_categoria, idUsuario, zona) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (nombre, precio, disponible, filename, tipo, detalles, categoria, idUsuario, zona))
+
+        
 
         mysql.connection.commit()
         cursor.close()
@@ -416,7 +425,7 @@ def agregar_propiedad():
         flash("Propiedad agregada con éxito")
         return redirect(url_for('index'))
 
-    return render_template("propiedades.html", categorias=categorias, estado=estado)
+    return render_template("propiedades.html", categorias=categorias, estado=estado, zona=zona)
 
 
 @app.route('/agendar', methods=['GET', 'POST'])
@@ -455,8 +464,24 @@ def agendar():
 
 
 
-
-
+@app.route('/mis_citas')
+def mis_citas():
+    if 'idUsuario' not in session:
+        return redirect('/login')
+    
+    id_usuario = session['idUsuario']
+    cursor = mysql.connection.cursor()
+    cursor.execute("""
+        SELECT c.id_cita, c.fecha, c.hora, c.motivo, c.metodo, p.nombre AS propiedad
+        FROM citas c
+        LEFT JOIN propiedad p ON c.id_propiedad = p.id_propiedad
+        WHERE c.idUsuario = %s
+        ORDER BY c.fecha DESC
+    """, (id_usuario,))
+    
+    citas = cursor.fetchall()
+    cursor.close()
+    return render_template('mis_citas.html', citas=citas)
 @app.route('/calendario')
 def calendario():
     if 'usuario' not in session:
@@ -569,26 +594,34 @@ def reporte_citas_excel():
     output.seek(0)
     return send_file(output, as_attachment=True, download_name='reporte_citas.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
-@app.route('/mis_citas')
-def mis_citas():
-    if 'idUsuario' not in session:
-        return redirect('/login')
+@app.route('/buscar', methods=['GET'])
+def buscar():
+    query = request.args.get('query', '').strip()
+    cursor = mysql.connection.cursor()
     
-    id_usuario = session['idUsuario']
-    cursor = db.connection.cursor()
-    cursor.execute("""
-        SELECT c.id_cita, c.fecha, c.hora, c.motivo, c.metodo, p.nombre AS propiedad
-        FROM citas c
-        LEFT JOIN propiedad p ON c.id_propiedad = p.id_propiedad
-        WHERE c.idUsuario = %s
-        ORDER BY c.fecha DESC
-    """, (id_usuario,))
-    
-    citas = cursor.fetchall()
+    if not query:
+        cursor.execute("""
+            SELECT p.id_propiedad, p.nombre, p.precio, p.disponible, p.imagen, 
+                   c.nombre AS categoria, z.nombre_zona
+            FROM propiedad p
+            LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
+            LEFT JOIN zona z ON p.id_zona = z.id_zona
+            WHERE p.disponible = 'si'
+        """)
+    else:
+        cursor.execute("""
+            SELECT p.id_propiedad, p.nombre, p.precio, p.disponible, p.imagen, 
+                   c.nombre AS categoria, z.nombre_zona
+            FROM propiedad p
+            LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
+            LEFT JOIN zona z ON p.id_zona = z.id_zona
+            WHERE p.disponible = 'si' 
+              AND (p.nombre LIKE %s OR c.nombre LIKE %s OR z.nombre_zona LIKE %s)
+        """, (f"%{query}%", f"%{query}%", f"%{query}%"))
+
+    propiedades = cursor.fetchall()
     cursor.close()
-    return render_template('mis_citas.html', citas=citas)
-
-
+    return render_template('index.html', propiedades=propiedades, query=query)
 
 
 

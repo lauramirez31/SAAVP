@@ -17,6 +17,7 @@
                     <a class="nav-link" href="/mis_citas">Mis Citas</a>
                 </li>
 
+
                 {% if session.get('rol') == 'Admin' %}
                 <li class="nav-item">
                     <a class="nav-link text-white" href="{{ url_for('dashboard') }}">Dashboard</a>
