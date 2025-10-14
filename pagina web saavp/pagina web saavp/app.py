@@ -20,6 +20,8 @@ from email.mime.text import MIMEText
 
 
 
+
+
 #funcion para generar token de recuperacion
 def generate_token(email):
     token =secrets.token_urlsafe(32)
@@ -91,6 +93,7 @@ app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'saavp' 
 
 mysql =MySQL(app)
+db = MySQL(app)
 
 
 @app.route('/')
@@ -452,25 +455,7 @@ def agendar():
 
 
 
-@app.route('/mis_citas')
-def mis_citas():
-    idUsuario = session.get('idUsuario')
 
-    if not idUsuario:
-        flash("Debes iniciar sesión para ver tus citas", "warning")
-        return redirect(url_for('login'))
-
-    cursor = mysql.connection.cursor()
-    cursor.execute("""
-        SELECT titulo, descripcion, fecha, hora 
-        FROM citas 
-        WHERE idUsuario = %s
-        ORDER BY fecha, hora
-    """, (idUsuario,))
-    citas = cursor.fetchall()
-    cursor.close()
-
-    return render_template('mis_citas.html', citas=citas)
 
 @app.route('/calendario')
 def calendario():
@@ -583,6 +568,27 @@ def reporte_citas_excel():
 
     output.seek(0)
     return send_file(output, as_attachment=True, download_name='reporte_citas.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+@app.route('/mis_citas')
+def mis_citas():
+    if 'idUsuario' not in session:
+        return redirect('/login')
+    
+    id_usuario = session['idUsuario']
+    cursor = db.connection.cursor()
+    cursor.execute("""
+        SELECT c.id_cita, c.fecha, c.hora, c.motivo, c.metodo, p.nombre AS propiedad
+        FROM citas c
+        LEFT JOIN propiedad p ON c.id_propiedad = p.id_propiedad
+        WHERE c.idUsuario = %s
+        ORDER BY c.fecha DESC
+    """, (id_usuario,))
+    
+    citas = cursor.fetchall()
+    cursor.close()
+    return render_template('mis_citas.html', citas=citas)
+
+
 
 
 

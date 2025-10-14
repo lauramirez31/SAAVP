@@ -3,7 +3,7 @@
         <a class="navbar-brand" href="{{url_for('index')}}" target="_parent">SAAVP</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarID"
             aria-controls="navbarID" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarID">
             <ul class="navbar-nav me-auto mb-2 mb-sm-0">
@@ -13,7 +13,10 @@
                 <li class="nav-item">
                     <a class="nav-link text-white" href="{{ url_for('catalogo') }}">Catálogo</a>
                 </li>
-                
+                <li class="nav-item">
+                    <a class="nav-link" href="/mis_citas">Mis Citas</a>
+                </li>
+
                 {% if session.get('rol') == 'Admin' %}
                 <li class="nav-item">
                     <a class="nav-link text-white" href="{{ url_for('dashboard') }}">Dashboard</a>
@@ -22,7 +25,8 @@
                     <a class="nav-link text-white" href="{{ url_for('catalogo') }}">Catálogo</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{{ url_for('dashboard_propiedades') }}">Dashboard_propiedades</a>
+                    <a class="nav-link text-white"
+                        href="{{ url_for('dashboard_propiedades') }}">Dashboard_propiedades</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white" href="{{ url_for('dashboard_citas') }}">Dashboard_Citas</a>
