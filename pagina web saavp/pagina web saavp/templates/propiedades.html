@@ -1,0 +1,118 @@
+{% extends 'base.html'%}
+
+{% block title %}propiedades {% endblock %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Propiedades</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+  <div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-3">
+      <div class="card-header bg-primary text-white text-center">
+        <h4>Registro de Propiedad</h4>
+      </div>
+      <div class="card-body">
+        <form action="/agregar_propiedad" method="POST" enctype="multipart/form-data">
+
+          <!-- Nombre del producto -->
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre de la propiedad</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="casa" required>
+          </div>
+
+          <!-- Precio -->
+          <div class="mb-3">
+            <label for="precio" class="form-label">Precio ($)</label>
+            <input type="number" class="form-control" id="precio" name="precio" step="0.01" placeholder="Ej: 1500.00"
+              required>
+          </div>
+
+          <!-- tipo -->
+          <div class="mb-3">
+            <label for="tipo" class="form-label">Tipo de Inmueble</label>
+            <select class="form-control" id="tipo" name="tipo" required>
+              <option value="">Seleccione un tipo</option>
+              {% for tipo in estado %}
+              <option value="{{ tipo[0] }}">{{ tipo[3] }} - {{ tipo[1] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- disponible -->
+          <div class="mb-3">
+            <label for="disponible" class="form-label">Disponible</label>
+            <select class="form-control" id="disponible" name="disponible" required>
+              <option value="">Seleccione disponibilidad</option>
+              <option value="si">Disponible</option>
+              <option value="no">No disponible</option>
+            </select>
+          </div>
+
+
+
+
+          <!-- categoria -->
+          <div class="mb-3">
+            <label for="categoria" class="form-label">categoria del inmueble</label>
+            <select class="form-control" id="categoria" name="categoria" required>
+              <option value="">Seleccione una categoria</option>
+              {% for cat in categorias %}
+              <option value="{{ cat[0] }}">{{ cat[3] }} - {{ cat[1] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- detalles -->
+          <div class="mb-3">
+            <label for="detalles" class="form-label">agrega detalles a la Propiedad</label>
+            <input type="text" class="form-control" id="detalles" name="detalles" step="0.01"
+              placeholder="casa agradale con 2 pisos y patia on baños privados" required>
+          </div>
+
+
+
+
+          <!-- Imagen -->
+          <div class="mb-3">
+            <label for="imagen" class="form-label">Imagen del Producto</label>
+            <input class="form-control" type="file" id="imagen" name="imagen" accept="image/*" required>
+          </div>
+
+
+          <!-- idUsuario-->
+          <input type="hidden" name="idUsuario" value="{{ idUsuario }}">
+
+
+
+
+
+
+          <!-- Botones -->
+          <div class="d-flex justify-content-end">
+            <button type="reset" class="btn btn-secondary me-2">Limpiar</button>
+            <button type="submit" class="btn btn-primary">Registrar</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+
+{% endblock %}

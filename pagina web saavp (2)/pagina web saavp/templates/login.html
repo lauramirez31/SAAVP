@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Login {% endblock %}
+
+
+{% block content %}
+  
+  <nav class="navbar navbar-expand-lg" style="background-color: #03A9F4;">
+  <div class="container-fluid d-flex justify-content-between align-items-center">
+    <a class="navbar-brand" href="{{url_for('index')}}" target="_parent">SAAVP</a>
+    </a>
+    <a class="btn btn-outline-light fw-semibold" href="{{ url_for('index') }}">
+      Volver al inicio
+    </a>
+
+  </div>
+</nav>
+
+
+<section class="d-flex align-items-center justify-content-center mt-5">
+  <div class="container">
+    <!-- Tu contenido ya existente -->
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-sm-10 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+        <div class="card border border-dark rounded-3 shadow-lg">
+          <div class="card-body p-4">
+
+
+            <div class="text-center mb-3">
+              <img src="{{url_for('static', filename='img/real-estate-building-logo-icon-design-free-vector.jpg')}}" 
+                   alt="Logo" class="img-fluid" style="max-width: 120px;">
+            </div>
+
+
+            <h2 class="fw-bold text-center mb-4">INICIAR SESIÓN</h2>
+
+
+          
+
+
+            <form action="{{url_for('login')}}" method="POST">
+              <div class="form-floating mb-3">
+                <input type="email" class="form-control rounded-pill" name="username" id="username" placeholder="Usuario o correo" required>
+                <label for="username">Usuario o correo</label>
+              </div>
+
+              <div class="form-floating mb-3">
+                <input type="password" class="form-control rounded-pill" name="password" id="password" placeholder="Contraseña" required>
+                <label for="password">Contraseña</label>
+              </div>
+
+
+              <div class="d-grid mb-3">
+                <button class="btn btn-primary btn-lg rounded-pill" type="submit">INGRESAR</button>
+              </div>
+
+
+              <div class="d-flex justify-content-between mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" name="rememberMe" id="rememberMe">
+                  <label class="form-check-label" for="rememberMe">Mantener sesión</label>
+                </div>
+                <a href="{{url_for('forgot')}}" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
+              </div>
+
+              <p class="text-center">¿No tienes una cuenta? 
+                <a href="{{url_for('registro')}}" class="fw-bold text-decoration-none">Regístrate aquí</a>
+              </p>
+             
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
