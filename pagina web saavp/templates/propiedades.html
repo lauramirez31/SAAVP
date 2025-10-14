@@ -28,7 +28,7 @@
           <!-- Nombre del producto -->
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre de la propiedad</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ej: Laptop Dell" required>
+            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="casa" required>
           </div>
 
           <!-- Precio -->
@@ -38,6 +38,17 @@
               required>
           </div>
 
+          <!-- Categoría -->
+          <div class="mb-3">
+            <label for="id_categoria" class="form-label">Tipo de Inmueble</label>
+            <select class="form-control" id="id_categoria" name="id_categoria" required>
+              <option value="">Seleccione una categoría</option>
+              {% for cat in categorias %}
+              <option value="{{ cat[0] }}">{{ cat[3] }} - {{ cat[1] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
           <!-- disponible -->
           <div class="mb-3">
             <label for="disponible" class="form-label">Disponible</label>
@@ -45,17 +56,17 @@
               <option value="">Seleccione disponibilidad</option>
               <option value="si">Disponible</option>
               <option value="no">No disponible</option>
-           </select>
+            </select>
           </div>
 
 
           <!-- estado -->
-            <div class="mb-3">
+          <div class="mb-3">
             <label for="estado" class="form-label">Estado del inmueble</label>
             <select class="form-control" id="estado" name="estado" required>
               <option value="">Seleccione un tipo</option>
-              {% for cat in categorias %}
-              <option value="{{ cat[0] }}">{{ cat[1] }}</option>
+              {% for es in estado %}
+              <option value="{{ es[0] }}">{{ es[1] }}</option>
               {% endfor %}
             </select>
           </div>
@@ -67,16 +78,7 @@
               placeholder="casa agradale con 2 pisos y patia on baños privados" required>
           </div>
 
-          <!-- Tipo inmueble -->
-          <div class="mb-3">
-            <label for="tipo_inmueble" class="form-label">Tipo de inmueble</label>
-            <select class="form-control" id="tipo_inmueble" name="tipo_inmueble" required>
-              <option value="">Seleccione un tipo</option>
-              {% for cat in categorias %}
-              <option value="{{ cat[0] }}">{{ cat[3] }}</option>
-              {% endfor %}
-            </select>
-          </div>
+
 
 
           <!-- Imagen -->
