@@ -68,9 +68,12 @@
                                         <div class="form-group">
                                             <label for="rol {{u['idUsuario']}}">Rol</label>
                                             <select name="rol" class="form-select" id="rl{{u ['idUsuario']}}">
-                                                <option value="1" {% if u['idRol'] == 1 %}selected{% endif %}>Admin</option>
-                                                <option value="2" {% if u['idRol'] == 2 %}selected{% endif %}>Usuario</option>
+                                                <option value="1" {% if u['idRol']==1 %}selected{% endif %}>Admin
+                                                </option>
+                                                <option value="2" {% if u['idRol']==2 %}selected{% endif %}>Usuario
+                                                </option>
                                             </select>
+
                                         </div>
                                     </div>
 
@@ -88,10 +91,13 @@
 
 
 
-                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#ModalEliminar{{u['idUsuario']}}">Eliminar</button>
+
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#ModalEliminar{{u['idUsuario']}}">Eliminar</button>
 
                     <!-- The Modal -->
-                    <div class="modal" id="ModalEliminar{{u['idUsuario']}}" tabindex="-1" role="dialog" aria-labelledby="modalLabel{{u['idUsuario']}}" aria-hidden="true"> 
+                    <div class="modal" id="ModalEliminar{{u['idUsuario']}}" tabindex="-1" role="dialog"
+                        aria-labelledby="modalLabel{{u['idUsuario']}}" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
 
@@ -103,12 +109,14 @@
 
                                 <!-- Modal body -->
                                 <div class="modal-body">
-                                    SEGURO QUE QUIERES ELIMINAR EL USUARIO  <strong> {{u['nombre']}}  {{u['apellido']}}</strong>?
+                                    SEGURO QUE QUIERES ELIMINAR EL USUARIO <strong> {{u['nombre']}}
+                                        {{u['apellido']}}</strong>?
                                 </div>
 
                                 <!-- Modal footer -->
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-warning"
+                                        data-bs-dismiss="modal">Cancelar</button>
                                     <a href="{{url_for('eliminar', id= u['idUsuario'])}}" class="btn btn-danger"></a>
                                 </div>
 
@@ -117,8 +125,11 @@
                     </div>
                 </td>
             </tr>
+
             {% endfor %}
         </tbody>
     </table>
+
 </div>
+
 {% endblock %}
